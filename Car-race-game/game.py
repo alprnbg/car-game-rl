@@ -38,12 +38,12 @@ def run_sensor(sensors):
 
 def playerHasHitBaddie(playerRect, baddies):
     for b in baddies:
-        if playerRect.colliderect(b['rect']):
+        if b['type']=='car' and playerRect.colliderect(b['rect']):
             return True
     return False
 
-def drawText(text, font, surface, x, y):
-    textobj = font.render(text, 1, TEXTCOLOR)
+def drawText(text, font, surface, x, y, color):
+    textobj = font.render(text, 1, color)
     textrect = textobj.get_rect()
     textrect.topleft = (x, y)
     surface.blit(textobj, textrect)
@@ -94,6 +94,18 @@ class CarGame:
         sys.exit()
 
     def init(self):
+        global mainClock
+        global windowSurface
+        global font
+        global playerImage
+        global car3
+        global car4
+        global playerRect
+        global baddieImage
+        global sample
+        global wallLeft
+        global wallRight
+
         pygame.init()
         mainClock = pygame.time.Clock()
         windowSurface = pygame.display.set_mode((self.WINDOWWIDTH, self.WINDOWHEIGHT))
@@ -119,7 +131,7 @@ class CarGame:
         self.baddies = []
         self.score = 0
 
-        playerRect.topleft = (WINDOWWIDTH / 2, WINDOWHEIGHT - 50)
+        playerRect.topleft = (self.WINDOWWIDTH / 2, self.WINDOWHEIGHT - 50)
         self.baddieAddCounter = 0
 
 
@@ -143,24 +155,27 @@ class CarGame:
             self.baddieAddCounter = 0
             baddieSize = 30
             newBaddie = {'rect': pygame.Rect(random.randint(140, 485), 0 - baddieSize, 23, 47),
-                         'speed': random.randint(BADDIEMINSPEED, BADDIEMAXSPEED),
+                         'speed': random.randint(self.BADDIEMINSPEED, self.BADDIEMAXSPEED),
                          'surface':pygame.transform.scale(random.choice(sample), (23, 47)),
-                        }
+                         'type':'car'
+                         }
             self.baddies.append(newBaddie)
             sideLeft= {'rect': pygame.Rect(0,0,126,600),
-                       'speed': random.randint(BADDIEMINSPEED, BADDIEMAXSPEED),
+                       'speed': random.randint(self.BADDIEMINSPEED, self.BADDIEMAXSPEED),
                        'surface':pygame.transform.scale(wallLeft, (126, 599)),
+                       'type':'wall'
                       }
             self.baddies.append(sideLeft)
             sideRight= {'rect': pygame.Rect(497,0,303,600),
-                        'speed': random.randint(BADDIEMINSPEED, BADDIEMAXSPEED),
+                        'speed': random.randint(self.BADDIEMINSPEED, self.BADDIEMAXSPEED),
                         'surface':pygame.transform.scale(wallRight, (303, 599)),
+                        'type':'wall'
                        }
             self.baddies.append(sideRight)
 
-        if moveLeft and playerRect.left > 0:
+        if moveLeft and playerRect.left > 126:
             playerRect.move_ip(-1 * self.PLAYERMOVERATE, 0)
-        if moveRight and playerRect.right < self.WINDOWWIDTH:
+        if moveRight and playerRect.right < 497:
             playerRect.move_ip(self.PLAYERMOVERATE, 0)
 
         #x, y = playerRect.topleft
@@ -184,8 +199,8 @@ class CarGame:
         windowSurface.fill(self.BACKGROUNDCOLOR)
 
         # Draw the score and top score.
-        drawText('Score: %s' % (score), font, windowSurface, 128, 0)
-        drawText('Top Score: %s' % (topScore), font, windowSurface,128, 20)
+        drawText('Score: %s' % (self.score), font, windowSurface, 128, 0, self.TEXTCOLOR)
+        drawText('Top Score: %s' % (self.topScore), font, windowSurface,128, 20, self.TEXTCOLOR)
 
         windowSurface.blit(playerImage, playerRect)
 
@@ -202,6 +217,6 @@ class CarGame:
             self.done = True
 
 
-        mainClock.tick(FPS)
+        mainClock.tick(self.FPS)
 
-        return (None, reward, self.done, None)
+        return (None, 'reward', self.done, None)

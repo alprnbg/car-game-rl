@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 from collections import namedtuple
 from itertools import count
 from PIL import Image
-from game import CarGame
 
 import torch
 import torch.nn as nn
@@ -16,7 +15,7 @@ import torch.nn.functional as F
 import torchvision.transforms as T
 
 
-env = CarGame()
+env = gym.make('CartPole-v0').unwrapped
 
 # set up matplotlib
 is_ipython = 'inline' in matplotlib.get_backend()
@@ -28,8 +27,6 @@ plt.ion()
 # if gpu is to be used
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-
-### REPLAY MEMORY ###
 
 Transition = namedtuple('Transition',
                         ('state', 'action', 'next_state', 'reward'))
@@ -54,10 +51,6 @@ class ReplayMemory(object):
 
     def __len__(self):
         return len(self.memory)
-
-
-
-### NETWORK ###
 
 class DQN(nn.Module):
 
@@ -88,18 +81,16 @@ class DQN(nn.Module):
         return self.head(x.view(x.size(0), -1))
 
 
-
 resize = T.Compose([T.ToPILImage(),
                     T.Resize(40, interpolation=Image.CUBIC),
                     T.ToTensor()])
 
-# WARNING
+
 def get_cart_location(screen_width):
     world_width = env.x_threshold * 2
     scale = screen_width / world_width
     return int(env.state[0] * scale + screen_width / 2.0)  # MIDDLE OF CART
 
-# WARNING
 def get_screen():
     # Returned screen requested by gym is 400x600x3, but is sometimes larger
     # such as 800x1200x3. Transpose it into torch order (CHW).
@@ -148,7 +139,7 @@ init_screen = get_screen()
 _, _, screen_height, screen_width = init_screen.shape
 
 # Get number of actions from gym action space
-n_actions = len(env.action_space)
+n_actions = env.action_space.n
 
 policy_net = DQN(screen_height, screen_width, n_actions).to(device)
 target_net = DQN(screen_height, screen_width, n_actions).to(device)
@@ -165,7 +156,8 @@ steps_done = 0
 def select_action(state):
     global steps_done
     sample = random.random()
-    eps_threshold = EPS_END + (EPS_START - EPS_END) * math.exp(-1. * steps_done / EPS_DECAY)
+    eps_threshold = EPS_END + (EPS_START - EPS_END) * \
+        math.exp(-1. * steps_done / EPS_DECAY)
     steps_done += 1
     if sample > eps_threshold:
         with torch.no_grad():
@@ -198,6 +190,7 @@ def plot_durations():
     if is_ipython:
         display.clear_output(wait=True)
         display.display(plt.gcf())
+
 
 
 def optimize_model():
@@ -288,3 +281,11 @@ env.render()
 env.close()
 plt.ioff()
 plt.show()
+
+
+
+
+
+
+
+

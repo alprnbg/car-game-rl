@@ -5,7 +5,9 @@ myGame = CarGame()
 myGame.init()
 myGame.reset()
 
-action = 1
+action = 2
 
 while(True):
-    myGame.step(action) 
+	myGame.step(action)
+	if myGame.done:
+		myGame.reset()
