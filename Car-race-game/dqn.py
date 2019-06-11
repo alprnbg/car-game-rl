@@ -84,15 +84,15 @@ class DQN(nn.Module):
 resize = T.Compose([T.ToPILImage(),
                     T.Resize(40, interpolation=Image.CUBIC),
                     T.ToTensor()])
-                    
+
 ################################################################################
-# WARNING:
+# TODO:
 def get_cart_location(screen_width):
     world_width = env.x_threshold * 2
     scale = screen_width / world_width
     return int(env.state[0] * scale + screen_width / 2.0)  # MIDDLE OF CART
 
-# WARNING:
+# TODO:
 def get_screen():
     # Returned screen requested by gym is 400x600x3, but is sometimes larger
     # such as 800x1200x3. Transpose it into torch order (CHW).

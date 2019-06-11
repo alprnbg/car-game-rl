@@ -32,6 +32,10 @@ def run_sensor(sensors):
 
     return sensor_values
 """
+def grayscale(self, img):
+    arr = pygame.surfarray.array3d(img)
+    arr=arr.dot([0.298, 0.587, 0.114])[:,:,None].repeat(3,axis=2)
+    return arr
 
 def playerHasHitBaddie(playerRect, baddies):
     for b in baddies:
@@ -61,7 +65,7 @@ wallRight = None
 
 class CarGame:
     def __init__(self):
-        self.action_space = ['A', 'D']
+        self.action_space = [0, 1, 2]
         self.WINDOWWIDTH = 800
         self.WINDOWHEIGHT = 600
         self.TEXTCOLOR = (255, 255, 255)
@@ -82,8 +86,9 @@ class CarGame:
         self.topScore = 0
 
 
-    def render(self):
-        pass
+    def get_frame(self):
+        global windowSurface
+        return pygame.surfarray.array3d(windowSurface)
 
 
     def close(self):
@@ -131,6 +136,11 @@ class CarGame:
         playerRect.topleft = (self.WINDOWWIDTH / 2, self.WINDOWHEIGHT - 50)
         self.baddieAddCounter = 0
 
+
+    # TODO: tranpose uygula
+    def render(self):
+        global windowSurface
+        return grayscale(windowSurface)
 
 
     def step(self, action):
@@ -185,7 +195,6 @@ class CarGame:
 
         for b in self.baddies:
             b['rect'].move_ip(0, b['speed'])
-
 
 
         for b in self.baddies[:]:
