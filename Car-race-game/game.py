@@ -2,9 +2,6 @@ import pygame, random, sys ,os,time
 from pygame.locals import *
 
 
-# TODO return step() -> reward
-# render       TODO Ekran
-
 """
 def run_sensor(sensors):
     sensor_values = [0,0,0,0,0]
@@ -210,13 +207,15 @@ class CarGame:
 
         pygame.display.update()
 
+        reward = 1
+
         # Check if any of the car have hit the player.
         if playerHasHitBaddie(playerRect, self.baddies):
             if self.score > self.topScore:
                 self.topScore = self.score
             self.done = True
-
+            reward = -1
 
         mainClock.tick(self.FPS)
 
-        return (None, 'reward', self.done, None)
+        return (None, reward, self.done, None)
