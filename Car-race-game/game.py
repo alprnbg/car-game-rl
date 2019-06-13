@@ -1,6 +1,7 @@
 import pygame, random, sys ,os,time
 from pygame.locals import *
-from PIL import image
+from PIL import Image
+import numpy as np
 
 """
 def run_sensor(sensors):
@@ -34,15 +35,10 @@ def run_sensor(sensors):
 """
 
 def gray(surf):
-    pilimg = Image.fromstring('RGBA', surf.get_size(),
-    pygame.image.tostring(surf, 'RGBA'))
+    pilimg = Image.frombytes('RGBA', surf.get_size(), pygame.image.tostring(surf, 'RGBA'))
     pilimg = pilimg.convert('L')
-    pilimg.show()# it's grayscaled
+    return np.array(pilimg).reshape((800,600,1))
 
-def grayscale(self, img):
-    arr = pygame.surfarray.array3d(img)
-    arr=arr.dot([0.298, 0.587, 0.114])[:,:,None].repeat(3,axis=2)
-    return arr
 
 def playerHasHitBaddie(playerRect, baddies):
     for b in baddies:
@@ -93,11 +89,6 @@ class CarGame:
         self.topScore = 0
 
 
-    def get_frame(self):
-        global windowSurface
-        return pygame.surfarray.array3d(windowSurface)
-
-
     def close(self):
         pygame.quit()
         sys.exit()
@@ -146,7 +137,7 @@ class CarGame:
 
     def render(self):
         global windowSurface
-        return grayscale(windowSurface)
+        return gray(windowSurface)
 
 
     def step(self, action):
@@ -223,7 +214,7 @@ class CarGame:
         pygame.display.update()
 
         reward = 1
-        gray(windowSurface)
+
         # Check if any of the car have hit the player.
         if playerHasHitBaddie(playerRect, self.baddies):
             if self.score > self.topScore:
