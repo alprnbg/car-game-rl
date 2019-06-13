@@ -11,3 +11,4 @@ while(True):
 	myGame.step(action)
 	if myGame.done:
 		myGame.reset()
+	break
