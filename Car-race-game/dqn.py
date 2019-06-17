@@ -137,7 +137,7 @@ init_screen = get_screen()
 _, _, screen_height, screen_width = init_screen.shape
 
 # Get number of actions from gym action space
-n_actions = len(env.action_space)
+n_actions = 3
 
 policy_net = DQN(screen_height, screen_width, n_actions).to(device)
 target_net = DQN(screen_height, screen_width, n_actions).to(device)
@@ -205,10 +205,10 @@ def optimize_model():
     non_final_mask = torch.tensor(tuple(map(lambda s: s is not None,
                                           batch.next_state)), device=device, dtype=torch.uint8)
     non_final_next_states = torch.cat([s for s in batch.next_state
-                                                if s is not None])
-    state_batch = torch.cat(batch.state)
+                                                if s is not None]).float()
+    state_batch = torch.cat(batch.state).float()
     action_batch = torch.cat(batch.action)
-    reward_batch = torch.cat(batch.reward)
+    reward_batch = torch.cat(batch.reward).float()
 
     # Compute Q(s_t, a) - the model computes Q(s_t), then we select the
     # columns of actions taken. These are the actions which would've been taken
