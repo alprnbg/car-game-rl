@@ -34,10 +34,11 @@ def run_sensor(sensors):
     return sensor_values
 """
 
-def gray(surf):
+def gray(surf, middle):
     pilimg = Image.frombytes('RGBA', surf.get_size(), pygame.image.tostring(surf, 'RGBA'))
     pilimg = pilimg.convert('L')
-    return np.array(pilimg).reshape((600,800,1))
+    pilimg = [middle-50:middle+50,0:100]
+    return np.array(pilimg).reshape((100,100,1))
 
 
 def playerHasHitBaddie(playerRect, baddies):
@@ -142,7 +143,7 @@ class CarGame:
 
     def render(self):
         global windowSurface
-        return gray(windowSurface)
+        return gray(windowSurface, self.get_car_location())
 
 
     def step(self, action):
