@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from collections import namedtuple
 from itertools import count
 from PIL import Image
+from game import CarGame
 
 import torch
 import torch.nn as nn
@@ -56,7 +57,7 @@ class DQN(nn.Module):
 
     def __init__(self, h, w, outputs):
         super(DQN, self).__init__()
-        self.conv1 = nn.Conv2d(3, 16, kernel_size=5, stride=2)
+        self.conv1 = nn.Conv2d(1, 16, kernel_size=5, stride=2)
         self.bn1 = nn.BatchNorm2d(16)
         self.conv2 = nn.Conv2d(16, 32, kernel_size=5, stride=2)
         self.bn2 = nn.BatchNorm2d(32)
@@ -114,9 +115,10 @@ def get_screen():
 
 env.init()
 env.reset()
+#for i in range(100):
+#	env.step(0)
 plt.figure()
-plt.imshow(get_screen().cpu().squeeze(0).permute(1, 2, 0).numpy(),
-           interpolation='none')
+plt.imshow(get_screen().cpu().squeeze(0).permute(1, 2, 0).squeeze(2).numpy())
 plt.title('Example extracted screen')
 plt.show()
 
