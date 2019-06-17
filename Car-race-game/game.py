@@ -37,8 +37,8 @@ def run_sensor(sensors):
 def gray(surf, middle):
     pilimg = Image.frombytes('RGBA', surf.get_size(), pygame.image.tostring(surf, 'RGBA'))
     pilimg = pilimg.convert('L')
-    pilimg = np.array(pilimg)[400:,int(middle)-100:int(middle)+100]
-    return pilimg.reshape((200,200,1))
+    pilimg = np.array(pilimg)[300:,int(middle)-100:int(middle)+100]
+    return pilimg.reshape((300,200,1))
 
 
 def playerHasHitBaddie(playerRect, baddies):
@@ -226,7 +226,7 @@ class CarGame:
             if self.score > self.topScore:
                 self.topScore = self.score
             self.done = True
-            reward = -1
+            reward = -5
 
         mainClock.tick(self.FPS)
 
